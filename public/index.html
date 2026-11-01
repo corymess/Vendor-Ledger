@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Ledger</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Vendor Ledger</h1>
+  <h2>Vendors</h2>
+
+  <form id="vendor-form">
+    <label>Vendor name
+      <input type="text" id="name">
+    </label>
+    <label>What they sell or provide
+      <input type="text" id="goods_or_service">
+    </label>
+    <label>Contact (phone or email)
+      <input type="text" id="contact">
+    </label>
+    <label>Address
+      <input type="text" id="address">
+    </label>
+    <button type="submit">Add vendor</button>
+  </form>
+
+  <p id="message"></p>
+
+  <h3>Your vendors</h3>
+  <p id="empty-note">Loading vendors...</p>
+  <ul id="vendor-list"></ul>
+
+  <script src="app.js"></script>
+</body>
+</html>
