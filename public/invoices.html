@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Ledger - Invoices</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Vendor Ledger</h1>
+  <nav>
+    <a href="index.html">Vendors</a> |
+    <a href="invoices.html">Invoices</a>
+  </nav>
+
+  <h2>Invoices</h2>
+
+  <form id="invoice-form">
+    <label>Vendor
+      <select id="vendor_id"></select>
+    </label>
+    <label>Description
+      <input type="text" id="description">
+    </label>
+    <label>Amount ($)
+      <input type="text" id="amount" placeholder="250.00">
+    </label>
+    <label>Invoice date
+      <input type="date" id="invoice_date">
+    </label>
+    <label>Terms (days)
+      <input type="number" id="terms_days" value="30" min="0">
+    </label>
+    <button type="submit">Add invoice</button>
+  </form>
+
+  <p id="message"></p>
+
+  <h3>Your invoices</h3>
+  <p id="empty-note">Loading invoices...</p>
+  <table id="invoice-table">
+    <thead>
+      <tr>
+        <th>Vendor</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Invoice date</th>
+        <th>Due date</th>
+        <th>Completed</th>
+        <th>Approved</th>
+      </tr>
+    </thead>
+    <tbody id="invoice-list"></tbody>
+  </table>
+
+  <script src="invoices.js"></script>
+</body>
+</html>
