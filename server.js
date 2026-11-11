@@ -106,6 +106,55 @@ app.post('/api/invoices', (req, res) => {
   res.status(201).json(invoice);
 });
 
+// Mark an invoice completed and/or approved
+app.patch('/api/invoices/:id', (req, res) => {
+  const invoice = db
+    .prepare('SELECT * FROM invoices WHERE id = ?')
+    .get(req.params.id);
+
+  if (!invoice) {
+    return res.status(404).json({ error: 'Invoice not found.' });
+  }
+  if (invoice.paid_date) {
+    return res.status(400).json({ error: 'This invoice has already been paid.' });
+  }
+
+  const { completed, approved, approved_by } = req.body;
+
+  if (completed !== true && approved !== true) {
+    return res.status(400).json({ error: 'Nothing to update.' });
+  }
+
+  const markCompleted = completed === true && !invoice.completed;
+  const markApproved = approved === true && !invoice.approved;
+
+  if (approved === true && !invoice.completed && completed !== true) {
+    return res.status(400).json({
+      error: 'An invoice must be marked completed before it can be approved.'
+    });
+  }
+  if (markApproved && (!approved_by || !approved_by.trim())) {
+    return res.status(400).json({ error: 'Please enter who approved this invoice.' });
+  }
+
+  const today = new Date().toLocaleDateString('en-CA');
+
+  if (markCompleted) {
+    db.prepare('UPDATE invoices SET completed = 1, completed_date = ? WHERE id = ?')
+      .run(today, invoice.id);
+  }
+  if (markApproved) {
+    db.prepare(
+      'UPDATE invoices SET approved = 1, approved_date = ?, approved_by = ? WHERE id = ?'
+    ).run(today, approved_by.trim(), invoice.id);
+  }
+
+  const updated = db
+    .prepare(`${INVOICE_SELECT} WHERE invoices.id = ?`)
+    .get(invoice.id);
+  res.json(updated);
+});
+
 app.listen(PORT, () => {
   console.log(`Vendor Ledger running at http://localhost:${PORT}`);
 });
