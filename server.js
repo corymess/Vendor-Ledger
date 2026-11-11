@@ -155,6 +155,75 @@ app.patch('/api/invoices/:id', (req, res) => {
   res.json(updated);
 });
 
+// Check that text is a real date in YYYY-MM-DD form
+function isValidDate(text) {
+  const parsed = new Date(`${text}T00:00:00Z`);
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(text) &&
+    !Number.isNaN(parsed.getTime()) &&
+    parsed.toISOString().slice(0, 10) === text
+  );
+}
+
+// Invoices ready to pay, soonest due date first, with the total owed
+app.get('/api/invoices/to-pay', (req, res) => {
+  const invoices = db
+    .prepare(
+      `${INVOICE_SELECT}
+       WHERE invoices.completed = 1 AND invoices.approved = 1 AND invoices.paid_date IS NULL
+       ORDER BY due_date ASC, invoices.id ASC`
+    )
+    .all();
+
+  const total = invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
+  res.json({ invoices, total });
+});
+
+// Record a payment (paid in full)
+app.post('/api/invoices/:id/payment', (req, res) => {
+  const invoice = db
+    .prepare('SELECT * FROM invoices WHERE id = ?')
+    .get(req.params.id);
+
+  if (!invoice) {
+    return res.status(404).json({ error: 'Invoice not found.' });
+  }
+  if (invoice.paid_date) {
+    return res.status(400).json({ error: 'This invoice has already been paid.' });
+  }
+  if (!invoice.completed || !invoice.approved) {
+    return res
+      .status(400)
+      .json({ error: 'Only completed and approved invoices can be paid.' });
+  }
+
+  const { payment_date, payment_method } = req.body;
+
+  if (!payment_method || !payment_method.trim()) {
+    return res.status(400).json({ error: 'Please enter a payment method.' });
+  }
+
+  const dateText = payment_date
+    ? String(payment_date)
+    : new Date().toLocaleDateString('en-CA');
+  if (!isValidDate(dateText)) {
+    return res.status(400).json({ error: 'Please enter a valid payment date.' });
+  }
+  if (dateText < invoice.invoice_date) {
+    return res
+      .status(400)
+      .json({ error: 'Payment date cannot be before the invoice date.' });
+  }
+
+  db.prepare('UPDATE invoices SET paid_date = ?, payment_method = ? WHERE id = ?')
+    .run(dateText, payment_method.trim(), invoice.id);
+
+  const updated = db
+    .prepare(`${INVOICE_SELECT} WHERE invoices.id = ?`)
+    .get(invoice.id);
+  res.json(updated);
+});
+
 app.listen(PORT, () => {
   console.log(`Vendor Ledger running at http://localhost:${PORT}`);
 });
