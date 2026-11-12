@@ -38,6 +38,63 @@ async function loadVendors() {
   }
 }
 
+// Send a completed/approved change for one invoice to the server
+async function updateInvoice(id, changes) {
+  try {
+    const response = await fetch(`/api/invoices/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(changes)
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+      message.textContent = result.error;
+      return;
+    }
+
+    message.textContent = changes.approved
+      ? `Invoice approved by ${result.approved_by}.`
+      : 'Invoice marked completed.';
+    loadInvoices();
+  } catch (error) {
+    message.textContent = 'Could not reach the server.';
+  }
+}
+
+// Build the "Next step" cell for one invoice
+function buildNextStep(invoice) {
+  const cell = document.createElement('td');
+
+  if (invoice.paid_date) {
+    cell.textContent = `Paid ${invoice.paid_date}`;
+  } else if (!invoice.completed) {
+    const button = document.createElement('button');
+    button.textContent = 'Mark completed';
+    button.addEventListener('click', () => {
+      updateInvoice(invoice.id, { completed: true });
+    });
+    cell.appendChild(button);
+  } else if (!invoice.approved) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Approved by';
+
+    const button = document.createElement('button');
+    button.textContent = 'Approve';
+    button.addEventListener('click', () => {
+      updateInvoice(invoice.id, { approved: true, approved_by: input.value });
+    });
+
+    cell.appendChild(input);
+    cell.appendChild(button);
+  } else {
+    cell.textContent = 'Ready to pay';
+  }
+
+  return cell;
+}
+
 async function loadInvoices() {
   try {
     const response = await fetch('/api/invoices');
@@ -63,6 +120,7 @@ async function loadInvoices() {
         cell.textContent = text;
         row.appendChild(cell);
       }
+      row.appendChild(buildNextStep(invoice));
       list.appendChild(row);
     }
   } catch (error) {
