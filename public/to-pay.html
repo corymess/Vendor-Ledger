@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Vendor Ledger - To Pay</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<h1>Vendor Ledger</h1>
+	<nav>
+		<a href="index.html">Vendors</a> |
+		<a href="invoices.html">Invoices</a> |
+		<a href="to-pay.html">To Pay</a>
+	</nav>
+
+	<h2>To Pay</h2>
+	<p>Invoices that are completed and approved but not yet paid, soonest due date first.</p>
+
+	<p><strong id="total">Total to pay: $0.00</strong></p>
+
+	<p id="message"></p>
+
+	<p id="empty-note">Loading invoices...</p>
+	<table id="to-pay-table">
+		<thead>
+			<tr>
+				<th>Vendor</th>
+				<th>Description</th>
+				<th>Amount</th>
+				<th>Due date</th>
+				<th>Record payment</th>
+			</tr>
+		</thead>
+		<tbody id="to-pay-list"></tbody>
+	</table>
+
+	<script src="to-pay.js"></script>
+</body>
+</html>
