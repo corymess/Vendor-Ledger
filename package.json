@@ -1,8 +1,8 @@
 {
   "name": "vendor-ledger",
   "version": "1.0.0",
-  "description": "For optimization of vendor invoice tracking and payment ## Project Purpose:   - This application is to optimize vendor invoice tracking and payment for small business ## Essential Features:  - 1.\tKeep a list of vendors. Who you do business with.  - 2.\tEnter an invoice. Vendor information, what it’s for, amount, invoice date, and terms. The app works out the due date based on invoice date and term (net 30 terms).  - 3.\tMark it completed and approved. Was the order completed and did someone approve payment  - 4.\tSee what to pay. A screen that lists the invoices ready to pay (completed, approved, not yet paid), showing who, how much, and when, with the soonest due date first.  - 5.\tRecord the payment. Paid in full, with the date. ## Team and Responsibilities:  - I am completing this solo, so I will be handling all design, implementation, and testing.",
-  "main": "index.js",
+    "description": "Invoice tracker for small-business vendor payments: vendors, invoices, approval, and payment tracking.",
+    "main": "server.js",
     "scripts": {
     "start": "node server.js",
     "seed": "node seed.js"
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/corymess/Vendor-Ledger.git"
   },
   "keywords": [],
-  "author": "",
+    "author": "Cory Messer",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
